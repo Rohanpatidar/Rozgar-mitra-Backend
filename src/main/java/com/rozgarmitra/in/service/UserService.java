@@ -45,6 +45,7 @@ public class UserService {
         String password = passwordEncoder.encode(dto.getPassword());
         user.setPassword(password);
         user.setAddress(address);
+        user.setIsOnline(false);
         System.out.println("Role in DTO: " + dto.getRole());
         System.out.println("Role in Entity: " + user.getRole());
 
@@ -154,7 +155,7 @@ public class UserService {
 
         user.setUsername(user.getUsername() + suffix);
         user.setEmail(user.getEmail() + suffix);
-        user.setIsOnline(Boolean.FALSE);
+        user.setIsOnline(false);
 
 
 
