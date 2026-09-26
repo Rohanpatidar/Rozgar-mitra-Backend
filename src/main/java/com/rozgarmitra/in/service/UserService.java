@@ -69,6 +69,12 @@ public class UserService {
         if (user == null) {
             throw new RuntimeException("User Not Found With this Username");
         }
+
+        if (user.isDeleted()) {
+            throw new RuntimeException("This account has been deleted.");
+        }
+
+
         boolean isPasswordMatch = passwordEncoder.matches(dto.getPassword(), user.getPassword());
 
         if (!isPasswordMatch) {
@@ -132,7 +138,30 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(user);
     }
+    public void deleteAccount(String username) {
+        User user = userRepository.findByUsername(username);
 
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+
+        user.setDeleted(true);
+
+
+        String suffix = "_del_" + System.currentTimeMillis();
+
+
+        user.setUsername(user.getUsername() + suffix);
+        user.setEmail(user.getEmail() + suffix);
+        user.setIsOnline(Boolean.FALSE);
+
+
+
+
+        // 4. Database me save kar dein
+        userRepository.save(user);
+    }
     private UserResponseDto toUserResponse(User user) {
         UserResponseDto response = new UserResponseDto();
         response.setId(user.getId().toString());

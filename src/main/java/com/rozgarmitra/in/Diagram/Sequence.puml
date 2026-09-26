@@ -1,0 +1,42 @@
+@startuml
+actor Customer
+participant "React UI" as UI
+participant "BookingController" as API
+participant "TaskService" as Service
+participant "Database" as DB
+actor Labour
+
+Customer -> UI : Select Service & Request Labour
+UI -> API : POST /api/tasks (GeoLocation)
+API -> Service : findNearbyLabours(radius)
+Service -> DB : Fetch Labours near GeoLocation
+Service -> API : Return Matching Labours
+API -> UI : Notify Labours
+
+UI -> Labour : Show Request
+Labour -> UI : Accept Request
+UI -> API : PUT /api/tasks/{id}/accept
+API -> Service : assignTask(labourId)
+Service -> DB : Update TaskStatus (ACCEPTED)
+
+note over Customer, Labour: Labour reaches destination
+
+Customer -> UI : Generate Start OTP
+UI -> Customer : Show OTP
+Customer -> Labour : Share OTP verbally
+Labour -> UI : Enter Start OTP
+UI -> API : POST /api/tasks/verify-otp (OtpVerificationDto)
+API -> Service : validateOtp()
+Service -> DB : Update TaskStatus (IN_PROGRESS)
+
+note over Customer, Labour: Task Completed
+
+Customer -> UI : Generate End OTP
+Customer -> Labour : Share End OTP
+Labour -> UI : Enter End OTP
+UI -> API : POST /api/tasks/end
+API -> Service : calculateTimeAndCost()
+Service -> DB : Update TaskStatus (COMPLETED)
+API -> UI : Show Final Bill
+UI -> Customer : Prompt for Payment
+@enduml

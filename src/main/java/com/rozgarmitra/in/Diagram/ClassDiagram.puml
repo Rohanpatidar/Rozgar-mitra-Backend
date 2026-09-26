@@ -1,0 +1,54 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class User {
+  - id: Long
+  - name: String
+  - phone: String
+  - role: Role
+}
+
+class Task {
+  - id: Long
+  - startTime: DateTime
+  - endTime: DateTime
+  - status: TaskStatus
+}
+
+class ServiceCategory {
+  - id: Long
+  - serviceName: String
+  - hourlyRate: Double
+}
+
+class GeoLocation {
+  - latitude: Double
+  - longitude: Double
+}
+
+class Address {
+  - city: String
+  - pincode: String
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+  LABOUR
+}
+
+enum TaskStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+User "1" --> "1" Role : has
+User "1" --> "1" GeoLocation : tracks via
+User "1" --> "1" Address : lives at
+Task "*" --> "1" User : booked by (Customer)
+Task "*" --> "1" User : assigned to (Labour)
+Task "*" --> "1" ServiceCategory : belongs to
+Task "*" --> "1" TaskStatus : current status
+@enduml
